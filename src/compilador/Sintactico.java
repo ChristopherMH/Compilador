@@ -1,4 +1,4 @@
-package ehhCabeza;
+package compilador;
 
 import java.util.ArrayList;
 
@@ -32,7 +32,7 @@ public class Sintactico <T>{
 //			this.tok = this.token.get(0);
 		} catch (Exception e) 
 		{
-			System.out.println("El archivo est� vac�o");	
+			System.out.println("El archivo está vacío");	
 			System.exit(0);
 		}
 		Programa();
@@ -242,15 +242,15 @@ public class Sintactico <T>{
 	{
 		String tipo = ValoresInversos(type);
 		if(type == 0) 
-			tipo = "\nError sint�ctico, se esperaba una expresi�n **class** al comienzo";
+			tipo = "\nError sintáctico, se esperaba una expresión **class** al comienzo";
 		else if(type == 1)
-			tipo = "\nError sint�ctico en los l�mites, se encontr� al menos un token despu�s de la �ltima llave cerrada, token ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
+			tipo = "\nError sintáctico en los límites, se encontró al menos un token después de la última llave cerrada, token ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
 		else if(type == 2)
-			tipo = "\nError sint�ctico en asignaci�n, se esperaba un operador y operando antes de ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
+			tipo = "\nError sintáctico en asignación, se esperaba un operador y operando antes de ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
 		else if(type == 3)
-			tipo = "\nError sint�ctico en validaci�n, se esperaba un operador l�gico en lugar de ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
+			tipo = "\nError sintáctico en validación, se esperaba un operador lógico en lugar de ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
 		else 
-			tipo = "\nError sint�ctico en token ** "+tok+" ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " ** se esperaba un token ** " +tipo+" **";
+			tipo = "\nError sintáctico en token ** "+tok+" ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " ** se esperaba un token ** " +tipo+" **";
 		
 		System.out.println(tipo);
 	}
@@ -286,7 +286,7 @@ public class Sintactico <T>{
 		String devuelve, cadenas[] = {"class", "public", "private", "while","int","boolean","{","}", "=", ";","<", ">",   //12... Aunque no se usa como tal el "!" solo, sirve para que no lance error
 											"==", "<=", ">=", "!", "!=","true","false", "(",")", "/", "+", "-", "*", "if"};	
 		if(type == 50) 
-			return devuelve = "num�rico";
+			return devuelve = "numérico";
 		if(type == 52) 
 			return devuelve = "identificador";
 		devuelve = cadenas[type];

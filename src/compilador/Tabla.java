@@ -1,4 +1,4 @@
-package ehhCabeza;
+package compilador;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ public class Tabla {
 		String renglon[] = new String[tokenRC.size()];
 		String columna[] = new String[tokenRC.size()];
 		
-		//desmonto valores del arraylist en arreglos para su uso más fácil
+		//desmonto valores del arraylist en arreglos para su uso mï¿½s fï¿½cil
 		
 		for (int i = 0; i < tokenrc.size(); i++) 
 		{
@@ -35,7 +35,7 @@ public class Tabla {
 
 		}
 		
-		//Asigna valores al arraylist que desplegará la tabla
+		//Asigna valores al arraylist que desplegarï¿½ la tabla
 		for (int i = 0; i < tokenrc.size(); i++) {
 			
 			if(tipo[i] == entero || tipo[i] == booleano) {
@@ -71,7 +71,7 @@ public class Tabla {
 			}
 				
 		}
-		//Aquí a las variables declaradas se les asignan lo valores correspondientes al código en el .txt
+		//Aquï¿½ a las variables declaradas se les asignan lo valores correspondientes al cï¿½digo en el .txt
 		for (int i = 0; i < tokenRC.size(); i++) {
 			
 			for (int j = 0; j < valoresTab.size(); j++) 

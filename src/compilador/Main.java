@@ -1,4 +1,4 @@
-package ehhCabeza;
+package compilador;
 
 import java.awt.Color;
 import java.awt.Font;

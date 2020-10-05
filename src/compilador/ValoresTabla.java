@@ -1,4 +1,4 @@
-package ehhCabeza;
+package compilador;
 
 public class ValoresTabla {
 
