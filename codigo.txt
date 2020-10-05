@@ -1,0 +1,3 @@
+public class hol1{
+	int a1=9;
+}
