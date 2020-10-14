@@ -1,5 +1,3 @@
-package compilador;
-
 import java.util.ArrayList;
 
 public class Tabla {

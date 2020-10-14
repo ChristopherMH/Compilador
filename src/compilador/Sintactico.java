@@ -1,5 +1,3 @@
-package compilador;
-
 import java.util.ArrayList;
 
 //import analizadorlexico.copy.Lista3;
@@ -7,8 +5,8 @@ import java.util.ArrayList;
 public class Sintactico <T>{
 	ArrayList<Token> tokenRC;
 
-	ArrayList<String> token;
-    ArrayList<Integer>tipo; 
+	ArrayList<String> resultado = new ArrayList<>();
+    ArrayList<Integer>tipo;
     String tok = "", esperado = "";
     int type, contando = 0, flag = 0;
     String estructura = "";
@@ -240,24 +238,30 @@ public class Sintactico <T>{
 	}
 	public void error(int type)
 	{
-		String tipo = ValoresInversos(type);
-		if(type == 0) 
-			tipo = "\nError sintáctico, se esperaba una expresión **class** al comienzo";
-		else if(type == 1)
-			tipo = "\nError sintáctico en los límites, se encontró al menos un token después de la última llave cerrada, token ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
-		else if(type == 2)
-			tipo = "\nError sintáctico en asignación, se esperaba un operador y operando antes de ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
-		else if(type == 3)
-			tipo = "\nError sintáctico en validación, se esperaba un operador lógico en lugar de ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **";
-		else 
-			tipo = "\nError sintáctico en token ** "+tok+" ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " ** se esperaba un token ** " +tipo+" **";
-		
-		System.out.println(tipo);
+		try{
+			String tipo = ValoresInversos(type);
+
+			if(type == 0)
+				resultado.add("\nError sintáctico, se esperaba una expresión **class** al comienzo");
+			else if(type == 1)
+				resultado.add("\nError sintáctico en los límites, se encontró al menos un token después de la última llave cerrada, token ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **");
+			else if(type == 2)
+				resultado.add("\nError sintáctico en asignación, se esperaba un operador y operando antes de ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **");
+			else if(type == 3)
+				resultado.add("\nError sintáctico en validación, se esperaba un operador lógico en lugar de ** " + tok + " ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **");
+			else
+				resultado.add("\nError sintáctico en token ** "+tok+" ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " ** se esperaba un token ** " +tipo+" **");
+
+			//System.out.println(tipo);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
 	}
 	
 	public void error() 
-	{	
-		System.out.println("Error en la sintaxis, con el siguiente token ** "+tok+" ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **");
+	{
+		resultado.add("Error en la sintaxis, con el siguiente token ** "+tok+" ** en linea ** " + tokenRC.get(contando).getRenglon() + " **, No. de token ** " + tokenRC.get(contando).getColumna() + " **");
 	}
 	
 	public boolean LogicSimbols() {
@@ -284,12 +288,14 @@ public class Sintactico <T>{
 	public String ValoresInversos(int type)
 	{
 		String devuelve, cadenas[] = {"class", "public", "private", "while","int","boolean","{","}", "=", ";","<", ">",   //12... Aunque no se usa como tal el "!" solo, sirve para que no lance error
-											"==", "<=", ">=", "!", "!=","true","false", "(",")", "/", "+", "-", "*", "if"};	
+											"==", "<=", ">=", "!", "!=","true","false", "(",")", "/", "+", "-", "*", "if"};
+
 		if(type == 50) 
-			return devuelve = "numérico";
-		if(type == 52) 
-			return devuelve = "identificador";
-		devuelve = cadenas[type];
+			devuelve = "numérico";
+		else if(type == 52)
+			devuelve = "identificador";
+		else
+			devuelve = cadenas[type];
 		
 		return  devuelve;
 	}

@@ -1,5 +1,3 @@
-package compilador;
-
 public class ValoresTabla {
 
 	public String rango, tipo, nombre, valor, renglon, columna;
