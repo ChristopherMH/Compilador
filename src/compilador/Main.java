@@ -1,31 +1,13 @@
-package compilador;
-
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.util.*;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.util.ArrayList;
 
 public class Main extends JFrame implements KeyListener, ActionListener {
 
@@ -63,6 +45,7 @@ public class Main extends JFrame implements KeyListener, ActionListener {
         txtConsola = new JTextArea();
         txtConsola.setFont(new Font("", 0, 12));
         txtConsola.addKeyListener(this);
+        txtConsola.setTabSize(1);
 
         scrollConsola = new JScrollPane(txtConsola);
         scrollConsola.setBounds(30, 0, 400, 400);
@@ -80,6 +63,9 @@ public class Main extends JFrame implements KeyListener, ActionListener {
         txtMensaje = new JTextArea();
         txtMensaje.setBorder(BorderFactory.createBevelBorder(1));
         txtMensaje.setEnabled(false);
+        txtMensaje.setLineWrap(true);
+        txtMensaje.setWrapStyleWord(true);
+        txtMensaje.addKeyListener(this);
 
         scrollMensaje = new JScrollPane(txtMensaje);
         scrollMensaje.setBounds(30, 400, 400, 300);
@@ -128,6 +114,13 @@ public class Main extends JFrame implements KeyListener, ActionListener {
     @Override
     public void keyReleased(KeyEvent e) {
         txtMensaje.setForeground(Color.BLACK);
+        /*if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+            String[] lines = txtConsola.getText().split("\r\n|\r|\n");
+            for (int i=0;i<lines.length;i++)
+                txtLineas.append(++i + "\n");
+        }
+        */
+
 //		try {
 //			ArrayList<Token> tokens = Lexer.lex(txtConsola.getText());
 //			// Obtener salida de resultados
@@ -185,11 +178,11 @@ public class Main extends JFrame implements KeyListener, ActionListener {
 
     public void compilar() {
 
-        Analiza analizador = new Analiza("codigo.txt");
-        ArrayList<String> a1 = analizador.resultado;
+        Lexico analizador = new Lexico("codigo.txt");
+        ArrayList<String> erroresLexicos = analizador.resultado;
         ArrayList<Token> tk = analizador.tokenRC;
-        Tabla t;
-        Sintactico s;
+        Tabla tabla;
+        Sintactico sintactico = null;
 
 //			for(int i = 0; i < tk.size(); i++)
 //			{ 
@@ -198,14 +191,24 @@ public class Main extends JFrame implements KeyListener, ActionListener {
 
         txtMensaje.setText("");
         txtMensaje.setDisabledTextColor(Color.BLACK);
-        for (int i = 0; i < a1.size(); i++) {
-            txtMensaje.append(a1.get(i) + " \n");
+        for (int i = 0; i < erroresLexicos.size(); i++) {
+            txtMensaje.append(erroresLexicos.get(i) + " \n");
         }
 
-        if (a1.get(0).equals("No hay errores lexicos")) {
-            s = new Sintactico(analizador.tokenRC);
-            t = new Tabla(analizador.tokenRC);
+        if (erroresLexicos.get(0).equals("No hay errores lexicos")) {
+            sintactico = new Sintactico(analizador.tokenRC);
+            tabla = new Tabla(analizador.tokenRC);
+        }
 
+        ArrayList<String> erroresSintacticos = sintactico.resultado;
+
+        if (erroresSintacticos.size() == 0) {
+            txtMensaje.append("No hay errores sintácticos \n");
+            return;
+        }
+
+        for (int i = 0; i < erroresSintacticos.size(); i++) {
+            txtMensaje.append(erroresSintacticos.get(i) + " \n");
         }
 
     }
