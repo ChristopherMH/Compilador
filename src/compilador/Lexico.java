@@ -57,7 +57,7 @@ public class Lexico
 		{
 			return;
 		}
-		String cadenas[] = {"class", "public", "private", "while","int","boolean","{","}", "=", ";","<", ">",   //12... Aunque no se usa como tal el "!" solo, sirve para que no lance error
+		String cadenas[] = {"class", "public", "private", "while","int","boolean","char","float","{","}", "=", ";","<", ">",   //12... Aunque no se usa como tal el "!" solo, sirve para que no lance error
 							"==", "<=", ">=", "!", "!=","true","false", "(",")", "/", "+", "-", "*", "if"};		//14   total = 26, de 0 al 25 + nums e id --> 0 - 27
 		int tipo = -1;
 		for (int i = 0; i < cadenas.length; i++) 
@@ -65,24 +65,28 @@ public class Lexico
 			if(token.equals(cadenas[i]))
 				tipo = i;
 		}
-		if(token.matches("^[0-9]?$")) 
-		{
-			
-			tipo =50;
-			
+
+		if(token.matches("^['][a-zA-Z0-9][']?$")) { //Caracteres
+			tipo =49;
 		}
-		if(token.matches("^[0-9][0-9]?$")) {
-			tipo =50;
+
+		if(token.matches("^[0-9]{1,9}?$")) { //enteros
+			tipo = 50;
 		}
-		if(token.matches("^[0-9][0-9][0-9]+?$")) {//error en numeros
-			resultado.add("Error Léxico, se esperaba una longitud de 2 dígitos en el número \"" + token +"\" en la linea "+renglon+", No. de token "+columna+" ");
+
+		if(token.matches("^[0-9]{0,}[.][0-9]{1,5}?$")) {//Número real
+			tipo = 51;
+		}
+
+		if(token.matches("^[0-9]{10,}?$")) {//error en numeros
+			resultado.add("Error Léxico, se esperaba una longitud de máximo 9 dígitos en el número \"" + token +"\" en la linea "+renglon+", No. de token "+columna+" ");
 			tokenRC.add(new Token(token, renglon, columna, tipo));
 			bandera = false;
 			return;
 		}
 	
 		if(tipo==-1) {
-			Pattern pat = Pattern.compile("^[a-z]+[0-9]{0,}+$");
+			Pattern pat = Pattern.compile("^[a-zA-Z]+[0-9]{0,}+$");
 			Matcher mat = pat.matcher(token);
 			if(mat.find())
 				tipo =52;
