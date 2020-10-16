@@ -2,10 +2,10 @@ import java.util.ArrayList;
 
 public class Tabla {
 
-	final int clase = 0, publico = 1, privado = 2, whilex = 3, entero = 4, booleano = 5, llaveizq = 6,
-			llaveder = 7, EQ = 8, semi = 9,menor = 10, mayor = 11, d2EQ = 12, menorEQ = 13, mayorEQ = 14, diferente =15,
-			difEQ = 16,	truex = 17, falsex = 18, brackizq = 19, brackder = 20, div = 21, mas = 22, 
-			menos = 23, mult = 24, ifx = 25, num = 50,   ID = 52; //bool = 21,
+	final int clase = 0, publico = 1, privado = 2, whilex = 3, entero = 4, booleano = 5, caracter = 6, real=7 ,llaveizq = 8,
+			llaveder = 9, EQ = 10, semi = 11,menor = 12, mayor = 13, d2EQ = 14, menorEQ = 15, mayorEQ = 16, diferente =17,
+			difEQ = 18,	truex = 19, falsex = 20, brackizq = 21, brackder = 22, div = 23, mas = 24,
+			menos = 25, mult = 26, ifx = 27, num = 50, numReal = 51,ID = 52; //bool = 21,
 	
 	ArrayList<Token> tokenRC;
 	ArrayList<ValoresTabla> valoresTab = new ArrayList<ValoresTabla>();
@@ -36,13 +36,17 @@ public class Tabla {
 		//Asigna valores al arraylist que desplegar� la tabla
 		for (int i = 0; i < tokenrc.size(); i++) {
 			
-			if(tipo[i] == entero || tipo[i] == booleano) {
+			if(tipo[i] == entero || tipo[i] == booleano || tipo[i] == real || tipo[i] == caracter) {
 				
 				if(tipo[i] == entero)
 					nombreTipo = "int";
-				else
+				else if (tipo[i]==booleano)
 					nombreTipo = "boolean";
-				
+				else if (tipo[i]==real)
+					nombreTipo = "float";
+				else
+					nombreTipo = "char";
+
 				if(tipo[i-1] == publico)
 				{
 					if(nombreTipo.equals("int"))
@@ -55,15 +59,23 @@ public class Tabla {
 				{
 					if(nombreTipo.equals("int"))
 						ValoresHaciaTabla("private", nombreTipo, nombre[i+1],     "0", renglon[i+1], columna[i+1]);
-					else
+					else if(nombreTipo.equals("boolean"))
 						ValoresHaciaTabla("private", nombreTipo, nombre[i+1], "false", renglon[i+1], columna[i+1]);
+					else if(nombreTipo.equals("float"))
+						ValoresHaciaTabla("private", nombreTipo, nombre[i+1], "0.0", renglon[i+1], columna[i+1]);
+					else
+						ValoresHaciaTabla("private", nombreTipo, nombre[i+1], "' '", renglon[i+1], columna[i+1]);
 				}
 				else
 				{
 					if(nombreTipo.equals("int"))
 						ValoresHaciaTabla("S/M", nombreTipo, nombre[i+1],     "0", renglon[i+1], columna[i+1]);
-					else
+					else if(nombreTipo.equals("boolean"))
 						ValoresHaciaTabla("S/M", nombreTipo, nombre[i+1], "false", renglon[i+1], columna[i+1]);
+					else if(nombreTipo.equals("float"))
+						ValoresHaciaTabla("S/M", nombreTipo, nombre[i+1], "0.0", renglon[i+1], columna[i+1]);
+					else
+						ValoresHaciaTabla("S/M", nombreTipo, nombre[i+1], "' '", renglon[i+1], columna[i+1]);
 				}
 				
 			}
