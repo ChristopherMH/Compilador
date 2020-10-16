@@ -34,6 +34,7 @@ public class Main extends JFrame implements KeyListener, ActionListener {
         setLayout(null);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(3);
+        setAlwaysOnTop(true);
 
         txtLineas = new JTextArea();
         txtLineas.setEnabled(false);
@@ -101,7 +102,6 @@ public class Main extends JFrame implements KeyListener, ActionListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
-
     }
 
     @Override
@@ -109,17 +109,25 @@ public class Main extends JFrame implements KeyListener, ActionListener {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             txtLineas.append(++lineas + "\n");
         }
+
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         txtMensaje.setForeground(Color.BLACK);
+        /*if ((e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+
+        }*/
+
         /*if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
             String[] lines = txtConsola.getText().split("\r\n|\r|\n");
-            for (int i=0;i<lines.length;i++)
+            System.out.println(txtConsola.getText());
+            for (int i=0;i<lines.length;i++){
+                txtLineas.setText("");
                 txtLineas.append(++i + "\n");
-        }
-        */
+            }
+        }*/
+
 
 //		try {
 //			ArrayList<Token> tokens = Lexer.lex(txtConsola.getText());
