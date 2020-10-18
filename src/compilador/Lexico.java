@@ -99,7 +99,6 @@ public class Lexico
 		}
 		tokenRC.add(new Token(token, renglon, columna, tipo));
 
-//		System.out.println(cont++ + " " +token);
 	}
 	public String espacios(String linea){
 		for (String cadena : Arrays.asList("(", ")", "{", "}", "=", ";", "*", "-", "+", "<", "/", ">", "!"))
@@ -160,7 +159,6 @@ public class Lexico
 			}
 			contador--;
 		}
-//		System.out.println("Antes de madar token, token vale = " + token);
 		return token;
 	}
 }
