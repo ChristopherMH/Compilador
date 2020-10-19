@@ -3,7 +3,7 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 public class Sintactico<T> {
-    ArrayList<Token> tokenRC;
+    static ArrayList<Token> tokenRC;
 
     ArrayList<String> resultadoSintactico = new ArrayList<>();
     ArrayList<String> resultadoSemantico = new ArrayList<>();
@@ -46,6 +46,7 @@ public class Sintactico<T> {
                 posiciones.add(i);
             }
         }
+        if (contador == 2 && tokenRC.get(contando - 1).getToken().equals("}")) return -1;
         return contador > 1 ? posiciones.get(0) : -1;
     }
 
@@ -91,7 +92,11 @@ public class Sintactico<T> {
             eat(type);
             Declaracion();
         }
-        while (type == publico || type == privado || type == entero || type == booleano || type == real || type == caracter || type == ID) {
+        while (type == publico || type == privado || type == entero || type == booleano || type == real || type == caracter || type == ID || type == whilex || type == ifx) {
+            if (type == whilex || type == ifx) {
+                Statuto();
+                continue;
+            }
             if (type == ID) {
                 int indiceID = buscaID(tokenRC.get(contando).getToken());
                 if (indiceID == -1) { //SI ENTRA AQUÍ ES PORQUE NO HA SIDO DECLARADO EL ID
@@ -105,11 +110,15 @@ public class Sintactico<T> {
                     eat(EQ);
                     switch (tokenRC.get(indiceID - 1).getTipo()) {
                         case entero:
-                            if (type != num) {
-                                int tipoEncontrado = tokenRC.get(contando).getTipo();
-                                errorSemantico(4, tipoEncontrado == 49 ? 6 : (tipoEncontrado == 19 || tipoEncontrado == 20) ? 5 : tipoEncontrado == 51 ? 7 : tipoEncontrado);
+                            boolean entro = false;
+                            while (type == num || type == mas || type == menos || type == mult || type == div) {
+                                if (type != num && !entro) {
+                                    int tipoEncontrado = tokenRC.get(contando).getTipo();
+                                    errorSemantico(4, tipoEncontrado == 49 ? 6 : (tipoEncontrado == 19 || tipoEncontrado == 20) ? 5 : tipoEncontrado == 51 ? 7 : tipoEncontrado);
+                                    entro = true;
+                                }
+                                eat(type);
                             }
-                            eat(type);
                             break;
                         case booleano:
                             if (type != truex && type != falsex) {
@@ -132,15 +141,13 @@ public class Sintactico<T> {
                             }
                             eat(type);
                     }
+
                     eat(semi);
                 }
             } else if (type == publico || type == privado) eat(type);
             else
                 Declaracion();
         }
-
-        if (this.type == whilex || this.type == ifx)
-            Statuto();
 
         eat(llaveder);
 
@@ -152,6 +159,7 @@ public class Sintactico<T> {
 
     Hashtable<String, Integer> duplicados = new Hashtable<>();
     int contador = 0;
+
     public void verificaDeclaracionesDuplicadas() {
         if (duplicados.containsKey(tokenRC.get(contando).getToken())) {
             errorSemantico(-2, duplicados.get(tokenRC.get(contando).getToken()));
@@ -166,8 +174,6 @@ public class Sintactico<T> {
     }
 
     boolean declaracionDuplicada = false;
-    String tokenDuplicado = "";
-    int lineaPrimeraDeclaracion = 0;
 
     public void Declaracion() {
         String tok;
@@ -190,8 +196,9 @@ public class Sintactico<T> {
                     } else if (type == numReal) {
                         errorSemantico(entero, type);
                         eat(numReal);
-                    } else
-                        eat(num);
+                    } else {
+                        ArithmeticExp();
+                    }
                 }
                 eat(semi);
                 break;
@@ -333,14 +340,15 @@ public class Sintactico<T> {
     }
 
     public void TestingExp() {
-
         switch (type) {
             case ID:
-                if (type == ID) {
-                    eat(ID);
-                } else if (type == num)
-                    eat(num);
-
+                int indiceID = buscaID(tokenRC.get(contando).getToken());
+                if (indiceID == -1)  //SI ENTRA AQUÍ ES PORQUE NO HA SIDO DECLARADO EL ID
+                    errorSemantico(-1, ID);
+                if(tokenRC.get(indiceID - 1).getTipo() != entero){
+                    errorSemantico(-4,0);
+                }
+                eat(ID);
                 if (LogicSimbols())
                     if (type == ID) {
                         eat(ID);
@@ -357,15 +365,24 @@ public class Sintactico<T> {
 
         switch (type) {
             case num:
-
                 eat(num);
-
-            {
+                if (OperandoSimbols()) {
+                    if (type == 52) {
+                        eat(type);
+                        errorSemantico(-3, 0);
+                    }else
+                        eat(num);
+                }
+                break;
+            case ID:
+                int indiceID = buscaID(tokenRC.get(contando).getToken());
+                if (indiceID == -1)  //SI ENTRA AQUÍ ES PORQUE NO HA SIDO DECLARADO EL ID
+                    errorSemantico(-1, ID);
+                eat(ID);
                 if (OperandoSimbols())
-                    eat(num);
-            }
+                    eat(type);
 
-            break;
+                break;
             default:
                 error();
                 break;
@@ -391,6 +408,7 @@ public class Sintactico<T> {
         }
     }
 
+
     public void errorSemantico(int tipoEsperado, int tipoEncontrado) {
         try {
             if (tipoEsperado == -1) {
@@ -400,6 +418,16 @@ public class Sintactico<T> {
 
             if (tipoEsperado == -2) {
                 resultadoSemantico.add("\nError semántico: Se encontró variable duplicada **" + tokenRC.get(contando).getToken() + "** en la línea " + tokenRC.get(contando).getRenglon() + "\nPrimera vez declarada en línea: " + tipoEncontrado);
+                return;
+            }
+
+            if (tipoEsperado == -3) {
+                resultadoSemantico.add("\nError semántico: Se encontró expresión inválida en la línea " + tokenRC.get(contando).getRenglon()+"\n**"+tokenRC.get(contando-1).getToken()+"** no es un tipo de dato compatible.");
+                return;
+            }
+
+            if (tipoEsperado == -4) {
+                resultadoSemantico.add("\nError semántico: Se encontró expresión inválida en la línea " + tokenRC.get(contando).getRenglon()+"\n**"+tokenRC.get(contando).getToken()+"** no es un tipo de dato compatible.");
                 return;
             }
 
@@ -440,8 +468,7 @@ public class Sintactico<T> {
         if (type == menos || type == mas || type == div || type == mult) {
             eat(type);
             return true;
-        } else
-            error(2);
+        }
         return false;
     }
 

@@ -294,6 +294,7 @@ public class Main extends JFrame implements KeyListener, ActionListener, Undoabl
         else {
             for (int i = 0; i < erroresSintacticos.size(); i++)
                 txtMensaje.append(erroresSintacticos.get(i) + " \n");
+            return;
         }
         if (erroresSemanticos.size() == 0)
             txtMensaje.append("No hay errores semánticos \n");

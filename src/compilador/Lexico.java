@@ -62,8 +62,10 @@ public class Lexico
 		int tipo = -1;
 		for (int i = 0; i < cadenas.length; i++) 
 		{
-			if(token.equals(cadenas[i]))
+			if(token.equals(cadenas[i])) {
+				System.out.println("El token "+token+" se le da un tipo "+i);
 				tipo = i;
+			}
 		}
 
 		if(token.matches("^['][a-zA-Z0-9][']?$")) { //Caracteres
@@ -139,22 +141,22 @@ public class Lexico
 			
 			if(retEQ == 2)
 			{	
-				tokenRC.add(new Token("==", renglon, columna, 11));
+				tokenRC.add(new Token("==", renglon, columna, 14));
 				token = "==";
 			}
 			else if(retMayEQ == 2)
 			{	
-				tokenRC.add(new Token(">=", renglon, columna, 12));
+				tokenRC.add(new Token(">=", renglon, columna, 16));
 				token = ">=";
 			}
 			else if(retMenEQ == 2)
 			{	
-				tokenRC.add(new Token("<=", renglon, columna, 13));
+				tokenRC.add(new Token("<=", renglon, columna, 15));
 				token = "<=";
 			}
 			else if(retDif == 2)
 			{	
-				tokenRC.add(new Token("!=", renglon, columna, 14));
+				tokenRC.add(new Token("!=", renglon, columna, 18));
 				token = "!=";
 			}
 			contador--;
