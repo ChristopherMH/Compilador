@@ -48,7 +48,7 @@ public class Tabla {
 
         ArrayList<String> duplicados = new ArrayList<>();
         //Asigna valores al arraylist que desplegar� la tabla
-       // boolean declaracionDuplicada = false;
+        // boolean declaracionDuplicada = false;
         for (int i = 0; i < tokenrc.size(); i++) {
 
             if (tipo[i] == entero || tipo[i] == booleano || tipo[i] == real || tipo[i] == caracter) {
@@ -62,7 +62,7 @@ public class Tabla {
                 else
                     nombreTipo = "char";
 
-                if (buscaIDDuplicado(tokenRC.get(i + 1).getToken()) )
+                if (buscaIDDuplicado(tokenRC.get(i + 1).getToken()))
                     continue;
 
                 if (tipo[i - 1] == publico) {
@@ -105,7 +105,6 @@ public class Tabla {
             for (int j = 0; j < valoresTab.size(); j++) {
                 if (tokenRC.get(i).getToken().equals(valoresTab.get(j).nombre))
                     if (tipo[i] == ID && tipo[i + 1] == EQ) {
-
                         if (tipo[i + 3] == mas || tipo[i + 3] == menos || tipo[i + 3] == div || tipo[i + 3] == mult) {
                             valoresTab.set(j, new ValoresTabla(
                                     valoresTab.get(j).rango,
@@ -115,8 +114,18 @@ public class Tabla {
                                     valoresTab.get(j).renglon,
                                     valoresTab.get(j).columna)
                             );
-                        } else {
+                            if (tipo[i + 5] == mas || tipo[i + 5] == menos || tipo[i + 5] == div || tipo[i + 5] == mult) {
+                                valoresTab.set(j, new ValoresTabla(
+                                        valoresTab.get(j).rango,
+                                        valoresTab.get(j).tipo,
+                                        valoresTab.get(j).nombre,
+                                        tokenRC.get(i + 2).getToken() + " " + tokenRC.get(i + 3).getToken() + " " + tokenRC.get(i + 4).getToken() + " " + tokenRC.get(i + 5).getToken() + " " + tokenRC.get(i + 6).getToken(),
+                                        valoresTab.get(j).renglon,
+                                        valoresTab.get(j).columna)
+                                );
+                            }
 
+                        } else {
                             valoresTab.set(j, new ValoresTabla(
                                     valoresTab.get(j).rango,
                                     valoresTab.get(j).tipo,
@@ -174,15 +183,48 @@ public class Tabla {
             );
         }
         Main.modelo.setRowCount(0);
-        for (int i =0; i<valoresTab.size();i++){
-            Main.modelo.addRow(new String[]{(i+1)+"",valoresTab.get(i).rango,
+        for (int i = 0; i < valoresTab.size(); i++) {
+            int resultadoAritmetico = esExpresionAritmetica(valoresTab.get(i).valor);
+            if(resultadoAritmetico == -1)
+                continue;
+            Main.modelo.addRow(new String[]{(i + 1) + "", valoresTab.get(i).rango,
                     valoresTab.get(i).tipo,
                     valoresTab.get(i).nombre,
-                    valoresTab.get(i).valor,
+                    resultadoAritmetico == Integer.MIN_VALUE ? valoresTab.get(i).valor : resultadoAritmetico + "",
                     valoresTab.get(i).renglon,
                     valoresTab.get(i).columna});
         }
     }
+
+    private int esExpresionAritmetica(String s) {
+        String[] tokens = s.split(" ");
+        int resultado = Integer.MIN_VALUE;
+        if (s.contains("+") || s.contains("*") || s.contains("-") || s.contains("/")) {
+            for (int i = 0; i < tokens.length - 1; i += 2) {
+                try{
+                switch (tokens[i + 1]) {
+                    case "*":
+                        resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) * Integer.parseInt(tokens[i + 2]) : resultado * Integer.parseInt(tokens[i + 2]);
+                        break;
+                    case "/":
+                        resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) / Integer.parseInt(tokens[i + 2]) : resultado / Integer.parseInt(tokens[i + 2]);
+                        break;
+                    case "+":
+                        resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) + Integer.parseInt(tokens[i + 2]) : resultado + Integer.parseInt(tokens[i + 2]);
+                        break;
+                    case "-":
+                        resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) - Integer.parseInt(tokens[i + 2]) : resultado - Integer.parseInt(tokens[i + 2]);
+                        break;
+                }
+
+                }catch(Exception e){
+                    return -1;
+                }
+            }
+        }
+        return resultado;
+    }
+
 
     public void ValoresHaciaTabla(String ran, String tip, String nom, String val, String reng, String col) {
         valoresTab.add(new ValoresTabla(ran, tip, nom, val, reng, col));
