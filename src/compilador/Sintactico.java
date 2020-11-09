@@ -7,6 +7,7 @@ public class Sintactico<T> {
 
     ArrayList<String> resultadoSintactico = new ArrayList<>();
     ArrayList<String> resultadoSemantico = new ArrayList<>();
+    ArrayList<String> cuadruplos = new ArrayList();
     String tok = "", esperado = "";
     int type, contando = 0;
     String estructura = "";
@@ -106,19 +107,32 @@ public class Sintactico<T> {
                     eat(type);
                     eat(semi);
                 } else {
+                    String cuadruploID = tokenRC.get(contando).getToken();
                     eat(ID);
                     eat(EQ);
                     switch (tokenRC.get(indiceID - 1).getTipo()) {
                         case entero:
                             boolean entro = false;
-                            while (type == num || type == mas || type == menos || type == mult || type == div) {
+                            int numOperadores = 0;
+                            String cuadruplo = cuadruploID+" = ";
+                            while (type == ID || type == num || type == mas || type == menos || type == mult || type == div) {
                                 if (type != num && !entro) {
                                     int tipoEncontrado = tokenRC.get(contando).getTipo();
                                     errorSemantico(4, tipoEncontrado == 49 ? 6 : (tipoEncontrado == 19 || tipoEncontrado == 20) ? 5 : tipoEncontrado == 51 ? 7 : tipoEncontrado);
                                     entro = true;
                                 }
+                                cuadruplo+=tokenRC.get(contando).getToken()+" ";
+                                if(type == ID){
+                                    int posicion = buscaID(tokenRC.get(contando).getToken());
+                                    String valor =tokenRC.get(posicion+2).getToken();
+                                    tokenRC.set(contando, new Token(valor,tokenRC.get(contando).getRenglon(), tokenRC.get(contando).getColumna(), tokenRC.get(contando).getTipo()));
+                                }
+
                                 eat(type);
+                                numOperadores++;
                             }
+                            if(numOperadores == 5)
+                                cuadruplos.add(cuadruplo);
                             break;
                         case booleano:
                             if (type != truex && type != falsex) {
@@ -144,7 +158,7 @@ public class Sintactico<T> {
 
                     eat(semi);
                 }
-            } else if (type == publico || type == privado) eat(type);
+            } else if (type == publico || type == privado) {eat(type); Declaracion();}
             else
                 Declaracion();
         }
