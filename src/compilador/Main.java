@@ -1,25 +1,18 @@
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.Rectangle2D;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Vector;
 
 public class Main extends JFrame implements KeyListener, ActionListener, UndoableEditListener {
 
@@ -30,9 +23,8 @@ public class Main extends JFrame implements KeyListener, ActionListener, Undoabl
     private JButton btnCompilar, btnAbrirArchivo;
     private static String ruta;
     private UndoManager undoManager;
-    private JTable tablaSimbolos;
-    public static ModeloTabla modelo;
-    private JScrollPane scrollTable;
+    private JTabbedPane tabs;
+    private String temporales[] = { "chris1", "uriel1"};
 
     public Main() {
         lineas = 1;
@@ -91,23 +83,24 @@ public class Main extends JFrame implements KeyListener, ActionListener, Undoabl
         txtMensaje.setFocusable(false);
 
         scrollMensaje = new JScrollPane(txtMensaje);
-        scrollMensaje.setBounds(30, 485, 400, 200);
+        scrollMensaje.setBounds(30, 510, 400, 175);
         scrollMensaje.setEnabled(true);
         scrollMensaje.setBackground(Color.decode("#303A40"));
         scrollMensaje.setForeground(Color.WHITE);
 
-        iniciarTabla();
-        scrollTable = new JScrollPane(tablaSimbolos);
-        scrollTable.setBounds(30, 330, 490, 150);
-        scrollTable.getViewport().setBackground(Color.decode("#303939"));
+        tabs= new JTabbedPane();
+        tabs.setBounds(30, 320, 490, 185);
+
+        tabs.addTab("Tabla de Símbolos",new TablaSimbolos());
+        tabs.addTab("Cuádruplos", new TablaCuadruplos());
 
         btnCompilar = new JButton("Compilar");
-        btnCompilar.setBounds(435, 485, 85, 40);
+        btnCompilar.setBounds(435, 510, 85, 40);
         btnCompilar.addActionListener(this);
         btnCompilar.setBackground(Color.decode("#58FA58"));
 
         btnAbrirArchivo = new JButton("Abrir");
-        btnAbrirArchivo.setBounds(435, 525, 85, 40);
+        btnAbrirArchivo.setBounds(435, 550, 85, 40);
         btnAbrirArchivo.addActionListener(e -> {
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setDialogTitle("Abrir archivo para compilar...");
@@ -125,7 +118,7 @@ public class Main extends JFrame implements KeyListener, ActionListener, Undoabl
         add(scrollLineas);
         add(scrollConsola);
         add(scrollMensaje);
-        add(scrollTable);
+        add(tabs);
 
         setVisible(true);
     }
@@ -173,46 +166,7 @@ public class Main extends JFrame implements KeyListener, ActionListener, Undoabl
         }*/
     }
 
-    private void iniciarTabla() {
-        modelo = new ModeloTabla();
-        tablaSimbolos = new JTable(modelo) {
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-                Component comp = super.prepareRenderer(renderer, row, column);
-                Color alternateColor = Color.decode("#394D59");
-                Color whiteColor = Color.decode("#4D6873");
-                if (!comp.getBackground().equals(getSelectionBackground())) {
-                    Color c = (row % 2 == 0 ? alternateColor : whiteColor);
-                    comp.setBackground(c);
-                    comp.setForeground(new Color(230, 230, 230));
-                }
-                return comp;
-            }
-        };
-        tablaSimbolos.getTableHeader().setReorderingAllowed(false); // Evitar mover columnas
-        tablaSimbolos.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Evitar multiselección
-        defineColumnas();
-    }
 
-    private void defineColumnas() {
-        modelo.addColumn("No.");
-        modelo.addColumn("Modificador");
-        modelo.addColumn("Tipo");
-        modelo.addColumn("Identificador");
-        modelo.addColumn("Valor");
-        modelo.addColumn("Renglón");
-        modelo.addColumn("No. de Token");
-
-        tablaSimbolos.setRowHeight(25);
-        tablaSimbolos.setFont(new Font("Default", 0, 16));
-        TableColumnModel columnas = tablaSimbolos.getColumnModel();
-        columnas.getColumn(0).setMaxWidth(30);
-        columnas.getColumn(1).setMaxWidth(100);
-        columnas.getColumn(2).setMaxWidth(70);
-        columnas.getColumn(3).setMaxWidth(80);
-        columnas.getColumn(4).setMaxWidth(60);
-        columnas.getColumn(5).setMaxWidth(60);
-        columnas.getColumn(6).setMaxWidth(100);
-    }
 
     private void leerArchivo(String path) {
         try {
@@ -279,6 +233,7 @@ public class Main extends JFrame implements KeyListener, ActionListener, Undoabl
 
         ArrayList<String> erroresSintacticos = sintactico.resultadoSintactico;
         ArrayList<String> erroresSemanticos = sintactico.resultadoSemantico;
+        ArrayList<String> cuadruplos = sintactico.cuadruplos;
 
         if (erroresSintacticos.size() == 0)
 
@@ -286,6 +241,16 @@ public class Main extends JFrame implements KeyListener, ActionListener, Undoabl
             txtMensaje.append("No hay errores sintácticos \n");
             txtMensaje.append("No hay errores semánticos \n");
             txtMensaje.setBorder(BorderFactory.createLineBorder(Color.GREEN,2));
+            if(!cuadruplos.isEmpty()){
+                TablaCuadruplos.modeloCuadruplos.setRowCount(0);
+                for (int i = 0; i < cuadruplos.size(); i++){
+                    String tokens[] =  cuadruplos.get(i).split(" ");
+                    TablaCuadruplos.modeloCuadruplos.addRow(new String[]{"","","","CUÁDRUPLO #"+(i+1)});
+                    TablaCuadruplos.modeloCuadruplos.addRow(new String[]{"","","",cuadruplos.get(i)});
+                    TablaCuadruplos.modeloCuadruplos.addRow(new String[]{tokens[3],tokens[2],tokens[4],temporales[i]});
+                    TablaCuadruplos.modeloCuadruplos.addRow(new String[]{tokens[5],temporales[i],tokens[6],tokens[0]});
+                }
+            }
             return;
         }
         txtMensaje.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
@@ -302,6 +267,7 @@ public class Main extends JFrame implements KeyListener, ActionListener, Undoabl
             for (int i = 0; i < erroresSemanticos.size(); i++)
                 txtMensaje.append(erroresSemanticos.get(i) + " \n");
         }
+
     }
 
     @Override
