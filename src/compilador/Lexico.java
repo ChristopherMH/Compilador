@@ -63,7 +63,6 @@ public class Lexico
 		for (int i = 0; i < cadenas.length; i++) 
 		{
 			if(token.equals(cadenas[i])) {
-				System.out.println("El token "+token+" se le da un tipo "+i);
 				tipo = i;
 			}
 		}
