@@ -12,6 +12,10 @@ public class Token {
 		this.tipo = tipo;
 	}
 
+	public String toString(){
+		return "Token: "+token+"\nRenglón: "+renglon+"\nColumna: "+columna+"\n"+tipo;
+	}
+
 	public String getToken() {
 		return token;
 	}

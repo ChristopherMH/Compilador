@@ -1,5 +1,3 @@
-import jdk.swing.interop.SwingInterOpUtils;
-
 import java.util.ArrayList;
 
 public class Tabla {
@@ -123,8 +121,22 @@ public class Tabla {
                                         valoresTab.get(j).renglon,
                                         valoresTab.get(j).columna)
                                 );
+                                if (tipo[i + 7] == mas || tipo[i + 7] == menos || tipo[i + 7] == div || tipo[i + 7] == mult) {
+                                    valoresTab.set(j, new ValoresTabla(
+                                            valoresTab.get(j).rango,
+                                            valoresTab.get(j).tipo,
+                                            valoresTab.get(j).nombre,
+                                            tokenRC.get(i + 2).getToken() + " " + tokenRC.get(i + 3).getToken()
+                                                    + " " + tokenRC.get(i + 4).getToken()
+                                                    + " " + tokenRC.get(i + 5).getToken()
+                                                    + " " + tokenRC.get(i + 6).getToken()
+                                                    + " " + tokenRC.get(i + 7).getToken()
+                                                    + " " + tokenRC.get(i + 8).getToken(),
+                                            valoresTab.get(j).renglon,
+                                            valoresTab.get(j).columna)
+                                    );
+                                }
                             }
-
                         } else {
                             valoresTab.set(j, new ValoresTabla(
                                     valoresTab.get(j).rango,
@@ -182,12 +194,13 @@ public class Tabla {
 
             );
         }
-        Main.modelo.setRowCount(0);
+        TablaSimbolos.modeloTabla.setRowCount(0);
         for (int i = 0; i < valoresTab.size(); i++) {
-            int resultadoAritmetico = esExpresionAritmetica(valoresTab.get(i).valor);
-            if(resultadoAritmetico == -1)
+            int resultadoAritmetico = esExpresionAritmetica(valoresTab.get(i).nombre, valoresTab.get(i).valor);
+
+            if (resultadoAritmetico == -1)
                 continue;
-            Main.modelo.addRow(new String[]{(i + 1) + "", valoresTab.get(i).rango,
+            TablaSimbolos.modeloTabla.addRow(new String[]{(i + 1) + "", valoresTab.get(i).rango,
                     valoresTab.get(i).tipo,
                     valoresTab.get(i).nombre,
                     resultadoAritmetico == Integer.MIN_VALUE ? valoresTab.get(i).valor : resultadoAritmetico + "",
@@ -196,32 +209,33 @@ public class Tabla {
         }
     }
 
-    private int esExpresionAritmetica(String s) {
+    private int esExpresionAritmetica(String nombre, String s) {
         String[] tokens = s.split(" ");
         int resultado = Integer.MIN_VALUE;
         if (s.contains("+") || s.contains("*") || s.contains("-") || s.contains("/")) {
             for (int i = 0; i < tokens.length - 1; i += 2) {
-                try{
-                switch (tokens[i + 1]) {
-                    case "*":
-                        resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) * Integer.parseInt(tokens[i + 2]) : resultado * Integer.parseInt(tokens[i + 2]);
-                        break;
-                    case "/":
-                        resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) / Integer.parseInt(tokens[i + 2]) : resultado / Integer.parseInt(tokens[i + 2]);
-                        break;
-                    case "+":
-                        resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) + Integer.parseInt(tokens[i + 2]) : resultado + Integer.parseInt(tokens[i + 2]);
-                        break;
-                    case "-":
-                        resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) - Integer.parseInt(tokens[i + 2]) : resultado - Integer.parseInt(tokens[i + 2]);
-                        break;
-                }
+                try {
+                    switch (tokens[i + 1]) {
+                        case "*":
+                            resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) * Integer.parseInt(tokens[i + 2]) : resultado * Integer.parseInt(tokens[i + 2]);
+                            break;
+                        case "/":
+                            resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) / Integer.parseInt(tokens[i + 2]) : resultado / Integer.parseInt(tokens[i + 2]);
+                            break;
+                        case "+":
+                            resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) + Integer.parseInt(tokens[i + 2]) : resultado + Integer.parseInt(tokens[i + 2]);
+                            break;
+                        case "-":
+                            resultado = resultado == Integer.MIN_VALUE ? Integer.parseInt(tokens[i]) - Integer.parseInt(tokens[i + 2]) : resultado - Integer.parseInt(tokens[i + 2]);
+                            break;
+                    }
 
-                }catch(Exception e){
+                } catch (Exception e) {
                     return -1;
                 }
             }
         }
+
         return resultado;
     }
 
